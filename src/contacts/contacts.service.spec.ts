@@ -16,4 +16,3 @@ describe('ContactsService', () => {
     expect(service).toBeDefined();
   });
 });
-

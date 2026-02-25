@@ -8,4 +8,3 @@ import { PrismaServie } from 'src/prisma.service';
   providers: [ContactsService, PrismaServie],
 })
 export class ContactsModule {}
-
