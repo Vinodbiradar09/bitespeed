@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Contact {
+  id                Int            @id @default(autoincrement())
+  email             String?
+  phoneNumber       String?
+  linkedId          Int?
+  linkPrecedence    LinkPrecedence
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  // self relation
+  primaryContact    Contact?       @relation("ContactToPrimary", fields: [linkedId], references: [id])
+  secondaryContacts Contact[]      @relation("ContactToPrimary")
+
+  // uhh for the primaryContact the linkedId = null and linkPrecendence is Primary
+  // it means the row Primary -> linkedId = null
+  // now one primaryContact can have many secondaryContact but one secondaryContact point to one primaryContact 
+  // now row secondaryContact -> linkedId = some id 
+
+  // when we build the primaryContact id = 1 , linkedId = null linkPre = Primary 
+  // when we build the secondaryContaact id = 23 linkedId = 1 linkPre = secondary 
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@index([linkedId])
+}
+
+enum LinkPrecedence {
+  primary
+  secondary
+}
+
+// okay is this true the contact model is one to one with the primaryContact here the linkedId holds the primary id of the contact 
+// so primary contact is one to one with contact the structure is contact and primaryContact is one to one with contact 
+// now secondary contact is one to many with contact but instead we do one to many with primary contact 
